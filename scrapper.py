@@ -16,7 +16,7 @@ def html_parser(link):
         soup = BeautifulSoup(page.content, "html.parser")
     except:
         RuntimeError(link + " might be down or unreachable")
-        quit()
+        
         
     return page, soup
 
@@ -37,6 +37,9 @@ def get_info(link):
 tracked = ["https://scantrad-union.com/manga/solo-leveling/",
            "https://scantrad-union.com/manga/volcanic-age/"]
 
+if path.exists("tracking.csv"):
+    tracking_database = pd.read_csv("tracking.csv")
+    
 # Getting basic informations to track
 for link in tracked:
     chapter , title, last_release, link = get_info(link)
@@ -50,16 +53,14 @@ for link in tracked:
     
     # Creates or update the database
     if path.exists("tracking.csv"):
-        tracking_database = pd.read_csv("tracking.csv")
         tracking_database = tracking_database.append(data)
-        tracking_database.to_csv("tracking.csv", index=False)
     else:
         tracking_database = pd.DataFrame(data)
         tracking_database.to_csv("tracking.csv", index=False)
         
 # Deleting the duplicates
-tracking_database = pd.read_csv("tracking.csv")
 tracking_database.drop_duplicates(subset=["Name"] , keep='last', inplace=True)
 tracking_database.to_csv("tracking.csv", index=False)
 
-print(tracking_database)
+
+
